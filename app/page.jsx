@@ -49,29 +49,6 @@ export default function MyApp() {
   );
 }
 
-function MyCard({ product }) {
-  return (
-    <Card
-      cover={
-        <Image
-          src={product?.image}
-          alt="product name"
-          height={200}
-          width={200}
-        />
-      }
-      className="sm:w-1/4  m-4  flex flex-col justify-between "
-    >
-      <Typography.Title level={3}> {product?.title} </Typography.Title>
-      <p>{product?.description}</p>
-      <div className="flex justify-between">
-        <p>
-          <strong>NGN {product?.price}</strong>
-        </p>
-        <Button type="primary" size="small">
-          Buy Now
-        </Button>
-      </div>
-    </Card>
-  );
+function MyCard(props) {
+  return <p>{props.product.title}</p>;
 }
