@@ -15,8 +15,12 @@ export default function SingleProduct() {
   }
 
   async function fetchSingleProduct() {
-    const res = await axios.get("https://fakestoreapi.com/products/" + id);
-    setProduct(res.data);
+    try {
+      const res = await axios.get("https://dummyjson.com/products/" + id);
+      setProduct(res.data);
+    } catch (error) {
+      window.location.href = "/";
+    }
   }
 
   useEffect(simpleHandler, []);
@@ -24,7 +28,7 @@ export default function SingleProduct() {
   return (
     <Card title={product.title} className="sm:w-1/3 my-5 mx-auto">
       <div className="text-center">
-        <Image src={product.image} alt="Product Image" height={200} />
+        <Image src={product.thumbnail} alt="Product Image" height={200} />
       </div>
       <p>{product.description}</p>
       <div className="flex justify-between ">

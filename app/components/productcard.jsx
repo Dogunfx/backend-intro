@@ -1,23 +1,67 @@
-import { Button, Card, Image, Input } from "antd";
+import { Button, Card, Image } from "antd";
 import { useContext, useState } from "react";
 import { CounterContext } from "../store/counter";
+import { ShoppingCartOutlined } from "@ant-design/icons";
 
-export default function MyCard({ product }) {
-  const { counter, setCounter } = useContext(CounterContext);
+export default function MyCard({ product, showCounter }) {
+  const { addToCart, removeFromCart } = useContext(CounterContext);
+  const [hasClick, setHasClick] = useState(showCounter);
+  const [num, setNum] = useState(1);
 
-  function handleClick() {
-    const newCa = counter + 1;
-    setCounter(newCa);
+  function handleButtonClick() {
+    addToCart(product);
+    setHasClick(true);
   }
+
+  function increaseNum() {
+    const newNum = num + 1;
+    setNum(newNum);
+  }
+
+  function decreaseNum() {
+    const newNum = num - 1;
+    if (newNum >= 1) {
+      setNum(newNum);
+    }
+
+    if (newNum == 0) {
+      removeFromCart(product);
+      setHasClick(false);
+    }
+  }
+
   return (
-    <Card title={product.title} className="sm:w-1/4 m-3">
-      <Image src={product.image} alt="Product Image" height={200} />
-      <p className="font-bold text-2xl">NGN {product.price}</p>
+    <Card title={product.title} className="sm:w-1/4 m-2">
+      <Image
+        src={product.thumbnail}
+        alt="Product Image"
+        height={200}
+        className="drop-shadow-[10px_0px_20px_#0007]"
+      />
+      <p className="text-xs">
+        NGN <span className="text-4xl font-bold"> {product.price}</span>
+      </p>
       <div className="flex justify-between">
-        <Button type="primary" onClick={handleClick}>
-          Buy now
-        </Button>
         <a href={"viewproduct/" + product.id}>VIew More</a>
+        {hasClick == true ? (
+          <div className="flex w-1/4">
+            <Button size="small" onClick={decreaseNum}>
+              -
+            </Button>
+            <span className="border px-2">{num}</span>
+            <Button size="small" onClick={increaseNum}>
+              +
+            </Button>
+          </div>
+        ) : (
+          <Button
+            type="primary"
+            onClick={handleButtonClick}
+            icon={<ShoppingCartOutlined />}
+          >
+            Add to cart
+          </Button>
+        )}
       </div>
     </Card>
   );

@@ -1,11 +1,15 @@
 "use client";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MyCard from "./components/productcard";
-import { Input, Typography } from "antd";
+import { Input, Spin, Typography } from "antd";
+import { find } from "lodash";
+import { CounterContext } from "./store/counter";
 
 export default function OnlineStore() {
   const [products, setProducts] = useState([]);
+  const [fetching, setFetching] = useState(true);
+  const { cartList } = useContext(CounterContext);
 
   useEffect(simpleHandler, []);
 
@@ -14,16 +18,27 @@ export default function OnlineStore() {
   }
 
   async function handleBackendRequest() {
-    const res = await axios.get("https://fakestoreapi.com/products");
-    setProducts(res.data);
+    // https://dummyjson.com/products
+    const res = await axios.get("https://dummyjson.com/products?limit=50");
+    // const res = await axios.get("https://fakestoreapi.com/products");
+    setProducts(res.data.products);
+    setFetching(false);
   }
 
   function handleMap(arrayItem) {
-    return <MyCard product={arrayItem} key={arrayItem.id} />;
+    if (find(cartList, arrayItem)) {
+      return (
+        <MyCard product={arrayItem} key={arrayItem.id} showCounter={true} />
+      );
+    } else {
+      return (
+        <MyCard product={arrayItem} key={arrayItem.id} showCounter={false} />
+      );
+    }
   }
 
   return (
-    <main>
+    <main className="bg-slate-300">
       <Typography.Title className="text-center">
         My Shopping Site
       </Typography.Title>
@@ -31,9 +46,15 @@ export default function OnlineStore() {
         placeholder="Enter Product name"
         className="w-3/4 block mx-auto text-center"
       />
-      <div className="sm:flex flex-wrap justify-center">
-        {products.map(handleMap)}
-      </div>
+      {fetching ? (
+        <div className="text-center">
+          <Spin />
+        </div>
+      ) : (
+        <div className="sm:flex flex-wrap justify-center">
+          {products.map(handleMap)}
+        </div>
+      )}
     </main>
   );
 }
