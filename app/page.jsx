@@ -1,16 +1,13 @@
 "use client";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MyCard from "./components/productcard";
-import { Input, Spin, Typography } from "antd";
-import { find } from "lodash";
-import { CounterContext } from "./store/counter";
+import { Input, message, Spin, Typography } from "antd";
 
 export default function OnlineStore() {
   const [products, setProducts] = useState([]);
+  const [copy, setCopy] = useState([]);
   const [fetching, setFetching] = useState(true);
-  const { cartList } = useContext(CounterContext);
-
   useEffect(simpleHandler, []);
 
   function simpleHandler() {
@@ -18,22 +15,26 @@ export default function OnlineStore() {
   }
 
   async function handleBackendRequest() {
-    // https://dummyjson.com/products
     const res = await axios.get("https://dummyjson.com/products?limit=50");
-    // const res = await axios.get("https://fakestoreapi.com/products");
     setProducts(res.data.products);
+    setCopy(res.data.products);
     setFetching(false);
   }
 
   function handleMap(arrayItem) {
-    if (find(cartList, arrayItem)) {
-      return (
-        <MyCard product={arrayItem} key={arrayItem.id} showCounter={true} />
-      );
-    } else {
-      return (
-        <MyCard product={arrayItem} key={arrayItem.id} showCounter={false} />
-      );
+    return <MyCard product={arrayItem} key={arrayItem.id} />;
+  }
+
+  var word;
+  function handleSearcher(evt) {
+    word = evt.target.value;
+    const newProducts = copy.filter(handleFilter);
+    setProducts(newProducts);
+  }
+
+  function handleFilter(product) {
+    if (product.title.toLowerCase().includes(word)) {
+      return product;
     }
   }
 
@@ -45,6 +46,7 @@ export default function OnlineStore() {
       <Input.Search
         placeholder="Enter Product name"
         className="w-3/4 block mx-auto text-center"
+        onChange={handleSearcher}
       />
       {fetching ? (
         <div className="text-center">

@@ -1,11 +1,18 @@
 import { Button, Card, Image } from "antd";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CounterContext } from "../store/counter";
 import { ShoppingCartOutlined } from "@ant-design/icons";
+import { find } from "lodash";
 
-export default function MyCard({ product, showCounter }) {
-  const { addToCart, removeFromCart } = useContext(CounterContext);
-  const [hasClick, setHasClick] = useState(showCounter);
+export default function MyCard({ product }) {
+  const { cartList, addToCart, removeFromCart } = useContext(CounterContext);
+  const [hasClick, setHasClick] = useState(false);
+
+  useEffect(() => {
+    if (find(cartList, product)) {
+      setHasClick(true);
+    }
+  }, []);
   const [num, setNum] = useState(1);
 
   function handleButtonClick() {
